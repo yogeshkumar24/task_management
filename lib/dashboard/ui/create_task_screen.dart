@@ -21,29 +21,17 @@ class CreateTaskScreen extends StatefulWidget {
 
 class _CreateTaskScreenState extends State<CreateTaskScreen> {
   final _formKey = GlobalKey<FormState>();
-  final titleController = TextEditingController();
-  final descriptionController = TextEditingController();
-  final dueDateController = TextEditingController();
-  final assignController = TextEditingController();
 
   @override
   void initState() {
-    setValues();
+    initUpdateForm();
     super.initState();
   }
 
-  setValues() {
+  initUpdateForm() {
     if (widget.isUpdate) {
       TaskProvider provider = Provider.of<TaskProvider>(context, listen: false);
-      titleController.text = widget.taskModel!.title ?? "";
-      descriptionController.text = widget.taskModel!.description ?? "";
-      dueDateController.text = widget.taskModel!.dueDate ?? "";
-      //assignController.text = widget.taskModel!.assignedUser ?? "";
-      provider.assignedUser = widget.taskModel!.assignedUser ?? "";
-      provider.selectedPriority =
-          widget.taskModel!.priority ?? provider.selectedPriority;
-      provider.selectedStatus =
-          widget.taskModel!.selectedStatus ?? provider.selectedStatus;
+      provider.preFillTaskDetails(widget.taskModel!);
     }
   }
 
@@ -73,7 +61,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                     ),
                     const SizedBox(height: 8),
                     CustomTextField(
-                      controller: titleController,
+                      controller: taskProvider.titleController,
                       validator: (value) {
                         return Validator.nameValidator(
                             value, StringConstant.enterTitle);
@@ -88,7 +76,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                     ),
                     const SizedBox(height: 8),
                     CustomTextField(
-                      controller: descriptionController,
+                      controller: taskProvider.descriptionController,
                       validator: (value) {
                         return Validator.nameValidator(
                             value, StringConstant.description);
@@ -104,12 +92,14 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                     const SizedBox(height: 8),
                     CustomTextField(
                       readOnly: true,
-                      controller: dueDateController,
+                      controller: taskProvider.dueDateController,
                       hintText: 'YYYY-MM-DD',
                       onTap: () async {
                         await taskProvider.selectDate(context);
-                        dueDateController.text =
-                            taskProvider.selectedDate.toString();
+                        taskProvider.dueDateController.text = taskProvider
+                            .selectedDate
+                            .toString()
+                            .substring(0, 10);
                       },
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -203,23 +193,15 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                       child: ElevatedButton(
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            TaskModel newTask = TaskModel(
-                              title: titleController.text,
-                              description: descriptionController.text,
-                              dueDate: dueDateController.text,
-                              priority: taskProvider.selectedPriority,
-                              selectedStatus: taskProvider.selectedStatus,
-                              assignedUser: taskProvider.assignedUser,
-                            );
                             if (widget.isUpdate) {
-                              newTask.sId = widget.taskModel!.sId;
                               bool value = await taskProvider.updateTask(
-                                  context, newTask, widget.taskModel!.sId!);
+                                  context, widget.taskModel!.sId!);
                               if (value) {
                                 Navigator.of(context).pop();
                               }
                             } else {
-                              await taskProvider.createTask(context, newTask);
+                              await taskProvider.createTask(context);
+                              taskProvider.clearField();
                             }
                           }
                         },

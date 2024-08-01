@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:task_management/profile/data/model/user_model.dart';
@@ -28,17 +29,22 @@ class ProfileProvider with ChangeNotifier {
   }
 
   Future<void> getAllUsers(BuildContext context) async {
-    try {
-      isLoading = true;
-      _userList = await _profileRepository.getAllUsers();
-      isLoading = false;
-    } catch (e) {
-      isLoading = false;
-      if (e is DioException) {
-        CustomAlertDialog.show(context,
-            title: "Error", message: e.message.toString());
-      } else {
-        AppUtils.showToast(e.toString());
+    final connectivity = await Connectivity().checkConnectivity();
+    if (connectivity == ConnectivityResult.none) {
+      AppUtils.showToast("Please Check Your Internet Connection");
+    } else {
+      try {
+        isLoading = true;
+        _userList = await _profileRepository.getAllUsers();
+        isLoading = false;
+      } catch (e) {
+        isLoading = false;
+        if (e is DioException) {
+          CustomAlertDialog.show(context,
+              title: "Error", message: e.message.toString());
+        } else {
+          AppUtils.showToast(e.toString());
+        }
       }
     }
   }

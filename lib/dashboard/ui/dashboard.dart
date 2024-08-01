@@ -5,6 +5,7 @@ import 'package:task_management/dashboard/ui/create_task_screen.dart';
 import 'package:task_management/dashboard/ui/task_details.dart';
 import 'package:task_management/dashboard/view_model/task_provider.dart';
 import 'package:task_management/profile/ui/profile.dart';
+import 'package:task_management/profile/view_model/profile_provider.dart';
 import 'package:task_management/shared/constants/string_const.dart';
 import 'package:task_management/shared/log.dart';
 import 'package:task_management/shared/widget/custom_app_bar.dart';
@@ -26,6 +27,7 @@ class _DashboardState extends State<Dashboard> {
   getData() {
     Future.delayed(Duration.zero, () async {
       Provider.of<TaskProvider>(context, listen: false).fetchTasks(context);
+      Provider.of<ProfileProvider>(context, listen: false).getAllUsers(context);
     });
   }
 

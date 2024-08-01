@@ -1,11 +1,9 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:task_management/dashboard/data/model/task_model.dart';
 import 'package:task_management/dashboard/domain/local_task_repository/local_task_repository.dart';
 import 'package:task_management/dashboard/domain/task_repository.dart';
-import 'package:task_management/profile/view_model/profile_provider.dart';
 import 'package:task_management/shared/log.dart';
 import 'package:task_management/shared/util/app_utils.dart';
 import 'package:task_management/shared/widget/custom_alert_dialog.dart';
@@ -15,6 +13,11 @@ class TaskProvider with ChangeNotifier {
   final LocalTaskRepository _localTaskRepository;
 
   TaskProvider(this._taskRepository, this._localTaskRepository);
+
+  final titleController = TextEditingController();
+  final descriptionController = TextEditingController();
+  final dueDateController = TextEditingController();
+  final assignController = TextEditingController();
 
   bool _isLoading = false;
 
@@ -70,20 +73,21 @@ class TaskProvider with ChangeNotifier {
       await _loadTasksFromDb();
     } else {
       await _fetchTasksFromApi(context);
-      getUserData(context);
     }
   }
 
-  getUserData(context) {
-    Future.delayed(Duration.zero, () async {
-      Provider.of<ProfileProvider>(context, listen: false).getAllUsers(context);
-    });
-  }
-
-  Future<void> createTask(BuildContext context, TaskModel toDoTask) async {
+  Future<void> createTask(BuildContext context) async {
     try {
+      TaskModel newTask = TaskModel(
+        title: titleController.text,
+        description: descriptionController.text,
+        dueDate: dueDateController.text,
+        priority: selectedPriority,
+        selectedStatus: selectedStatus,
+        assignedUser: assignedUser,
+      );
       isLoading = true;
-      TaskModel task = await _taskRepository.createTask(toDoTask);
+      TaskModel task = await _taskRepository.createTask(newTask);
       if (task.title != null) {
         _fetchTasksFromApi(context);
         AppUtils.showToast('Task Created', success: true);
@@ -102,11 +106,28 @@ class TaskProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> updateTask(
-      BuildContext context, TaskModel toDoTask, String id) async {
+  preFillTaskDetails(TaskModel taskModel) {
+    titleController.text = taskModel.title ?? "";
+    descriptionController.text = taskModel.description ?? "";
+    dueDateController.text = taskModel.dueDate!.substring(0, 10);
+    assignedUser = taskModel.assignedUser ?? "";
+    selectedPriority = taskModel.priority ?? selectedPriority;
+    selectedStatus = taskModel.selectedStatus ?? selectedStatus;
+  }
+
+  Future<bool> updateTask(BuildContext context, String id) async {
     try {
+      TaskModel newTask = TaskModel(
+        sId: id,
+        title: titleController.text,
+        description: descriptionController.text,
+        dueDate: dueDateController.text,
+        priority: selectedPriority,
+        selectedStatus: selectedStatus,
+        assignedUser: assignedUser,
+      );
       isLoading = true;
-      TaskModel model = await _taskRepository.updateTask(toDoTask, id);
+      TaskModel model = await _taskRepository.updateTask(newTask, id);
       if (model.sId != null) {
         _fetchTasksFromApi(context, loading: false);
         AppUtils.showToast('Task Updated', success: true);
@@ -177,5 +198,12 @@ class TaskProvider with ChangeNotifier {
   updateUser(value) {
     assignedUser = value;
     notifyListeners();
+  }
+
+  clearField() {
+    titleController.clear();
+    descriptionController.clear();
+    dueDateController.clear();
+    assignController.clear();
   }
 }

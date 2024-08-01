@@ -5,8 +5,9 @@ class CustomTextField extends StatelessWidget {
   String? Function(String?)? validator;
   String hintText;
   Function(String)? onChanged;
-  Widget? prefixIcon;
+  Widget? suffixIcon;
   bool readOnly = false;
+  bool obscureText = false;
   final VoidCallback? onTap;
 
   CustomTextField({
@@ -16,7 +17,8 @@ class CustomTextField extends StatelessWidget {
     this.validator,
     this.onChanged,
     this.readOnly = false,
-    this.prefixIcon,
+    this.obscureText = false,
+    this.suffixIcon,
     this.onTap,
   });
 
@@ -29,10 +31,11 @@ class CustomTextField extends StatelessWidget {
       validator: validator,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       onTap: onTap,
+      obscureText: obscureText,
       decoration: InputDecoration(
           contentPadding:
               const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-          prefixIcon: prefixIcon,
+          suffixIcon: suffixIcon,
           hintText: hintText,
           border: const OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(8)))),

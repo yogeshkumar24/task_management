@@ -18,14 +18,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
-    getData();
     super.initState();
-  }
-
-  getData() {
-    Future.delayed(Duration.zero, () async {
-      Provider.of<ProfileProvider>(context, listen: false).getAllUsers(context);
-    });
   }
 
   @override

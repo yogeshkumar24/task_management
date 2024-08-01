@@ -1,3 +1,5 @@
+import 'dart:isolate';
+
 import 'package:dio/dio.dart';
 import 'package:task_management/profile/data/model/user_model.dart';
 import 'package:task_management/shared/api_endpoints.dart';
@@ -13,7 +15,7 @@ class ProfileService implements ProfileServiceBase {
 
   @override
   Future<List<User>> getAllUsers() async {
-    final response = await dio.get(ApiEndpoints.getUsers);
+    final response = await Isolate.run(() => dio.get(ApiEndpoints.getUsers));
     if (response.statusCode == 200 || response.statusCode == 201) {
       UserModel model = UserModel.fromJson(response.data);
       return model.user!;

@@ -11,7 +11,7 @@ import 'package:task_management/dashboard/view_model/task_provider.dart';
 import 'package:task_management/profile/domain/profile_repository.dart';
 import 'package:task_management/profile/view_model/profile_provider.dart';
 import 'package:task_management/shared/util/storage_helper.dart';
-import 'package:task_management/shared/util/get_it/get_it.dart' as it;
+import 'package:task_management/dependency/get_it.dart' as it;
 
 void main() {
   setUp();

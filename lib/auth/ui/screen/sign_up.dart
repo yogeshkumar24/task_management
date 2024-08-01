@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:task_management/auth/data/model/login_request.dart';
 import 'package:task_management/auth/ui/screen/login_screen.dart';
 import 'package:task_management/auth/view_model/auth_provider.dart';
 import 'package:task_management/dashboard/ui/dashboard.dart';
@@ -17,8 +16,6 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -27,104 +24,113 @@ class _RegisterScreenState extends State<RegisterScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Form(
                 key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      StringConstant.email,
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    CustomTextField(
-                      controller: emailController,
-                      validator: (value) {
-                        return Validator.emailValidator(value);
-                      },
-                      hintText: StringConstant.email,
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    const Text(
-                      StringConstant.password,
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    CustomTextField(
-                      controller: passwordController,
-                      validator: (value) {
-                        return Validator.nameValidator(
-                            value, StringConstant.password);
-                      },
-                      hintText: StringConstant.password,
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    const Text(
-                        "Use this Email: eve.holt@reqres.in And password: pistol"),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Consumer<AuthProvider>(
-                      builder: (BuildContext context, authProvider, child) {
-                        return SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              await register(authProvider, context);
+                child: Consumer<AuthProvider>(
+                    builder: (BuildContext context, authProvider, child) {
+                  return Stack(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            StringConstant.email,
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          CustomTextField(
+                            controller: authProvider.emailController,
+                            validator: (value) {
+                              return Validator.emailValidator(value);
                             },
-                            child: authProvider.isLoading
-                                ? const CircularProgressIndicator()
-                                : const Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 30, vertical: 10),
-                                    child:
-                                        Text(StringConstant.registerButtonText),
-                                  ),
+                            hintText: StringConstant.email,
                           ),
-                        );
-                      },
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LoginScreen(),
+                          const SizedBox(
+                            height: 20,
                           ),
-                        );
-                      },
-                      child: const Text(StringConstant.alreadyAccount),
-                    ),
-                  ],
-                ))));
+                          const Text(
+                            StringConstant.password,
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          CustomTextField(
+                            obscureText: authProvider.showPassword,
+                            suffixIcon: GestureDetector(
+                                onTap: () {
+                                  authProvider.updatePasswordField();
+                                },
+                                child: Icon(!authProvider.showPassword
+                                    ? Icons.visibility
+                                    : Icons.visibility_off)),
+                            controller: authProvider.passwordController,
+                            validator: (value) {
+                              return Validator.nameValidator(
+                                  value, StringConstant.password);
+                            },
+                            hintText: StringConstant.password,
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          const Text("Use this Email: eve.holt@reqres.in"),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                await register(authProvider, context);
+                              },
+                              child: authProvider.isLoading
+                                  ? const CircularProgressIndicator()
+                                  : const Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 30, vertical: 10),
+                                      child: Text(
+                                          StringConstant.registerButtonText),
+                                    ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const LoginScreen(),
+                                ),
+                              );
+                            },
+                            child: const Text(StringConstant.alreadyAccount),
+                          ),
+                        ],
+                      ),
+                      if (authProvider.isLoading)
+                        const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                    ],
+                  );
+                }))));
   }
 
   Future<void> register(AuthProvider authProvider, BuildContext context) async {
-           if (_formKey.currentState!.validate()) {
-      AuthRequest request = AuthRequest(
-        email: emailController.text,
-        password: passwordController.text,
-      );
-      bool value = await authProvider.register(
-          context, request);
+    if (_formKey.currentState!.validate()) {
+      bool value = await authProvider.register(context);
       if (value) {
+        authProvider.clearFields();
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                const Dashboard(),
+            builder: (context) => const Dashboard(),
           ),
         );
       }
