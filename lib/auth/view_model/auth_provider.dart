@@ -4,6 +4,7 @@ import 'package:task_management/auth/data/model/login_request.dart';
 import 'package:task_management/auth/data/model/login_response.dart';
 import 'package:task_management/auth/domain/auth_repository.dart';
 import 'package:task_management/shared/util/app_utils.dart';
+import 'package:task_management/shared/util/get_it/get_it.dart';
 import 'package:task_management/shared/util/storage_helper.dart';
 import 'package:task_management/shared/widget/custom_alert_dialog.dart';
 
@@ -27,9 +28,8 @@ class AuthProvider with ChangeNotifier {
       AuthResponse response = await _authRepository.register(request);
       isLoading = false;
       if (response.id != null) {
-        StorageHelper().saveUserId(response.id.toString());
-        StorageHelper().saveUserId(response.token);
-        StorageHelper().saveIsLoggedIn(true);
+        await getIt<StorageHelper>().saveUserId(response.id.toString());
+        await getIt<StorageHelper>().saveIsLoggedIn(true);
         return true;
       }
       return false;
@@ -51,9 +51,9 @@ class AuthProvider with ChangeNotifier {
       AuthResponse response = await _authRepository.login(request);
       isLoading = false;
       if (response.token != null) {
-        StorageHelper().saveUserId(response.id.toString());
-        StorageHelper().saveUserId(response.token);
-        StorageHelper().saveIsLoggedIn(true);
+        await getIt<StorageHelper>().saveUserId(response.id.toString());
+        await getIt<StorageHelper>().saveIsLoggedIn(true);
+
         return true;
       }
       return false;

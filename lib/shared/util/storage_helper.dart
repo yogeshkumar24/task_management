@@ -1,4 +1,4 @@
-import 'package:get_storage/get_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task_management/shared/log.dart';
 
 class StorageHelper {
@@ -9,56 +9,61 @@ class StorageHelper {
 
   StorageHelper._internal();
 
-  static Future init() async {
-    await GetStorage.init();
-  }
-
   factory StorageHelper() {
     return _singleton;
   }
 
-  _savePref(String key, Object? value) async {
-    var prefs = GetStorage();
-    prefs.write(key, value);
-  }
-
-  T _getPref<T>(String key) {
-    return GetStorage().read(key) as T;
-  }
-
-  void clearAll() {
-    GetStorage().erase();
-  }
-
-  String? getUserId() {
-    return _getPref(_userId);
-  }
-
-  void saveUserId(String? id) {
-    _savePref(_userId, id);
-  }
-
-  String? getUserToken() {
-    try {
-      return _getPref(_userToken);
-    } catch (e) {
-      Log.e("getUserToken ${e.toString()}");
+  Future<void> _savePref(String key, Object? value) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (value is String) {
+      await prefs.setString(key, value);
+    } else if (value is int) {
+      await prefs.setInt(key, value);
+    } else if (value is bool) {
+      await prefs.setBool(key, value);
     }
   }
 
-  void saveUserToken(String? token) {
+  Future<T?> _getPref<T>(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.get(key) as T?;
+  }
+
+  Future<void> clearAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+  }
+
+  Future<String?> getUserId() async {
+    return await _getPref<String>(_userId);
+  }
+
+  Future<void> saveUserId(String? id) async {
+    await _savePref(_userId, id);
+  }
+
+  Future<String?> getUserToken() async {
     try {
-      _savePref(_userToken, token);
+      return await _getPref<String>(_userToken);
+    } catch (e) {
+      Log.e("getUserToken ${e.toString()}");
+      return null;
+    }
+  }
+
+  Future<void> saveUserToken(String? token) async {
+    try {
+      await _savePref(_userToken, token);
     } catch (e) {
       Log.e("saveUserToken ${e.toString()}");
     }
   }
 
-  bool getIsLoggedIn() {
-    return _getPref(_isLoggedIn) ?? false;
+  Future<bool> getIsLoggedIn() async {
+    return await _getPref<bool>(_isLoggedIn) ?? false;
   }
 
-  void saveIsLoggedIn(bool value) {
-    _savePref(_isLoggedIn, value);
+  Future<void> saveIsLoggedIn(bool value) async {
+    await _savePref(_isLoggedIn, value);
   }
 }
