@@ -7,14 +7,9 @@ import 'package:task_management/shared/constants/string_const.dart';
 import 'package:task_management/shared/validators.dart';
 import 'package:task_management/shared/widget/custom_text_field.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class RegisterScreen extends StatelessWidget {
+  RegisterScreen({super.key});
 
-  @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
-}
-
-class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -87,14 +82,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               onPressed: () async {
                                 await register(authProvider, context);
                               },
-                              child: authProvider.isLoading
-                                  ? const CircularProgressIndicator()
-                                  : const Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 30, vertical: 10),
-                                      child: Text(
-                                          StringConstant.registerButtonText),
-                                    ),
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 30, vertical: 10),
+                                child: Text(StringConstant.registerButtonText),
+                              ),
                             ),
                           ),
                           const SizedBox(
@@ -102,10 +94,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           TextButton(
                             onPressed: () {
+                              authProvider.clearFields();
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const LoginScreen(),
+                                  builder: (context) => LoginScreen(),
                                 ),
                               );
                             },

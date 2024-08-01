@@ -23,4 +23,6 @@ class StringConstant {
   static const String editTask = 'Update Task';
   static const String deleteTask = 'Delete Task';
   static const String ok = 'OK';
+  static const String dueDate = 'Due Date: ';
+  static const String priority = 'Priority: ';
 }

@@ -6,20 +6,10 @@ import 'package:task_management/dashboard/view_model/task_provider.dart';
 import 'package:task_management/shared/constants/string_const.dart';
 import 'package:task_management/shared/widget/custom_app_bar.dart';
 
-class TaskDetails extends StatefulWidget {
+class TaskDetails extends StatelessWidget {
   TaskModel taskModel;
 
   TaskDetails({required this.taskModel, super.key});
-
-  @override
-  State<TaskDetails> createState() => _TaskDetailsState();
-}
-
-class _TaskDetailsState extends State<TaskDetails> {
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,18 +22,16 @@ class _TaskDetailsState extends State<TaskDetails> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.taskModel.title ?? 'No Title'),
-            Text(widget.taskModel.description ?? 'No Description'),
-            Text(
-                "Assigned to: ${widget.taskModel.assignedUser ?? 'Unassigned'}"),
-            Text(
-                "Due Date: ${widget.taskModel.dueDate!.substring(0, 10)}"),
-            Text("Priority: ${widget.taskModel.priority ?? 'No Priority'}"),
-            Text("Status: ${widget.taskModel.selectedStatus ?? 'No Status'}"),
+            Text(taskModel.title!),
+            Text(taskModel.description!),
+            Text("Assigned to: ${taskModel.assignedUser}"),
+            Text("Due Date: ${taskModel.dueDate!.substring(0, 10)}"),
+            Text("Priority: ${taskModel.priority}"),
+            Text("Status: ${taskModel.selectedStatus}"),
             const SizedBox(
               height: 20,
             ),
-            widget.taskModel.selectedStatus == "Done"
+            taskModel.selectedStatus == "Done"
                 ? const Text("This Task is Complete")
                 : SizedBox(
                     width: double.infinity,
@@ -54,7 +42,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                           MaterialPageRoute(
                             builder: (context) => CreateTaskScreen(
                               isUpdate: true,
-                              taskModel: widget.taskModel,
+                              taskModel: taskModel,
                             ),
                           ),
                         );
@@ -76,7 +64,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                   child: ElevatedButton(
                     onPressed: () async {
                       bool value = await taskProvider.deleteTask(
-                          context, widget.taskModel.sId!);
+                          context, taskModel.sId!);
                       if (value) {
                         Navigator.of(context).pop();
                       }

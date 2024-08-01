@@ -20,12 +20,12 @@ class TaskModel {
 
   TaskModel.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
-    title = json['title'];
-    description = json['description'];
-    dueDate = json['dueDate'];
-    priority = json['priority'];
-    selectedStatus = json['selectedStatus'];
-    assignedUser = json['assignedUser'];
+    title = json['title']??'';
+    description = json['description']??'';
+    dueDate = json['dueDate']??'';
+    priority = json['priority']??'';
+    selectedStatus = json['selectedStatus']??'';
+    assignedUser = json['assignedUser']??'';
     iV = json['__v'];
   }
 

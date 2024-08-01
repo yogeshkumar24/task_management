@@ -7,14 +7,9 @@ import 'package:task_management/shared/constants/string_const.dart';
 import 'package:task_management/shared/validators.dart';
 import 'package:task_management/shared/widget/custom_text_field.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class LoginScreen extends StatelessWidget {
+  LoginScreen({super.key});
 
-  @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -98,10 +93,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           TextButton(
                             onPressed: () {
+                              authProvider.clearFields();
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const RegisterScreen(),
+                                  builder: (context) => RegisterScreen(),
                                 ),
                               );
                             },
@@ -132,5 +128,4 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     }
   }
-
 }

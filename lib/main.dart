@@ -58,9 +58,7 @@ class MyApp extends StatelessWidget {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
                   bool isLoggedIn = snapshot.data ?? false;
-                  return isLoggedIn
-                      ? const Dashboard()
-                      : const RegisterScreen();
+                  return isLoggedIn ? const Dashboard() : RegisterScreen();
                 }
               },
             )));

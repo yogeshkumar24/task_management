@@ -8,18 +8,8 @@ import 'package:task_management/shared/constants/string_const.dart';
 import 'package:task_management/shared/util/storage_helper.dart';
 import 'package:task_management/shared/widget/custom_app_bar.dart';
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
-
-  @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
-}
-
-class _ProfileScreenState extends State<ProfileScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,11 +22,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onPressed: () {
               StorageHelper().saveIsLoggedIn(false);
               StorageHelper().clearAll();
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const LoginScreen(),
-                  ));
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => LoginScreen()),
+                (Route<dynamic> route) => false,
+              );
             },
             icon: const Icon(Icons.logout),
           ),

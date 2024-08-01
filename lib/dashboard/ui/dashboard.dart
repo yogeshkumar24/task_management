@@ -89,16 +89,16 @@ class _DashboardState extends State<Dashboard> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(taskModel.title ?? "No title"),
-                                Text(taskModel.description ?? 'No Description'),
+                                Text(taskModel.title!),
+                                Text(taskModel.description!),
                                 Text(
-                                    "Assigned to: ${taskModel.assignedUser ?? 'Unassigned'}"),
+                                    "${StringConstant.assignUser} ${taskModel.assignedUser ?? 'Unassigned'}"),
                                 Text(
-                                    "Due Date: ${taskModel.dueDate!.substring(0, 10)}"),
+                                    "${StringConstant.dueDate} ${taskModel.dueDate!.substring(0, 10)}"),
                                 Text(
-                                    "Priority: ${taskModel.priority ?? 'No Priority'}"),
+                                    "${StringConstant.priority} ${taskModel.priority}"),
                                 Text(
-                                    "Status: ${taskModel.selectedStatus ?? 'No Status'}"),
+                                    "${StringConstant.status} : ${taskModel.selectedStatus}"),
                               ],
                             ),
                           );
